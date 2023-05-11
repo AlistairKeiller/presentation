@@ -4,6 +4,8 @@
 from manim import *
 # or: from manimlib import *
 from manim_slides import Slide
+import math
+import numpy as np
 
 class BasicExample(Slide):
     def construct(self):
@@ -109,4 +111,44 @@ class BasicExample(Slide):
         self.play(Transform(e20,e22))
         self.next_slide()
 
+        self.play(FadeOut(e19, e20))
+        e23 = Text("Higher Order Runge Kutta: RK4").to_edge(UP)
+        self.play(Write(e23))
+        self.next_slide()
+
+        e24 = MathTex(r"k_1&=f(t,y) \\ k_2&=f(t+\frac{\Delta t}{2},y+\Delta t\frac{k_1}{2}) \\ k_3&=f(t+\frac{\Delta t}{2},y+\Delta t\frac{k_2}{2}) \\ k_4&=f(t+\Delta t,y+\Delta tk_3) \\ y(t+\Delta t)&=y+\frac{\Delta t}{6}(k_1+2k_2+2k_3+k_4)").next_to(e23, DOWN)
+        self.play(Write(e24))
+        self.next_slide()
+
+        self.play(FadeOut(e23,e24))
+        e25 = Text("Adaptive Runge Kutta").to_edge(UP)
+        self.play(Write(e25))
+        self.next_slide()
+
+        e26 = MathTex(r"e_{n+1}=y_{n+1}-y_{n+1}^*=\Delta t \sum_{i=1}(b_i-b_i*)k_i")
+        self.play(Write(e26))
+        self.next_slide()
+
+        self.play(FadeOut(e25,e26))
+        ax = Axes(
+            x_range=[0, 1],
+            y_range=[1, 2]
+        )
+        self.play(Write(ax))
+        e27 = ax.plot(lambda x: math.exp(x), color=BLUE)
+        self.play(Write(e27))
+        self.next_slide()
+
+        t = ValueTracker(.5)
+        dt = ValueTracker(.05)
+        e28 = always_redraw(lambda: MathTex(r"t&: " + str(np.round(t.get_value(),decimals=2)) + r" \\ \Delta t&: " + str(np.round(dt.get_value(),decimals=2))).to_edge(UP))
+        f = always_redraw(lambda: Dot(ax.c2p(t.get_value(), math.exp(t.get_value()))))
+        ef = always_redraw(lambda: Dot(ax.c2p(t.get_value()+dt.get_value(),math.exp(t.get_value())+dt.get_value()*math.exp(t.get_value()+.5*dt.get_value()))))
+        self.play(Write(f),Write(ef),Write(e28))
+        self.next_slide()
         
+        self.play(t.animate.set_value(.1))
+        self.next_slide()
+
+        self.play(dt.animate.set_value(.6))
+        self.next_slide()
